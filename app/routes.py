@@ -15,6 +15,8 @@ from app import mpesa
 # from geoalchemy2 import Geometry
 from app.airtime import send_airtime
 from app import app, db
+from flask import request
+import sqlite3
 
 
 
@@ -509,6 +511,22 @@ def lipa_na_mpesa(id):
     except Exception as e:
         print(f'Error: \n\n {e}')    
     return redirect(url_for('dashboard_customer'))
+
+@app.route('/vuln/user')
+def vulnerable_user_lookup():
+    username = request.args.get('username')
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # ❌ SQL Injection vulnerability (intentional)
+    query = f"SELECT * FROM user WHERE username = '{username}'"
+    cursor.execute(query)
+
+    result = cursor.fetchall()
+    conn.close()
+
+    return str(result)
 
 
 # ===========
