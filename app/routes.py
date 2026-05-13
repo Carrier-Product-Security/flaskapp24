@@ -498,7 +498,21 @@ def lipa_na_mpesa(id):
     try:
         response = requests.post(api_url, json=mpesa_request, headers=headers)
         print(response.text, f'\n\nStatus: {response.status_code}')
+@app.route('/vuln/user')
+def vulnerable_user_lookup():
+    username = request.args.get('username')
 
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    # ❌ SQL Injection vulnerability (intentional)
+    query = f"SELECT * FROM user WHERE username = '{username}'"
+    cursor.execute(query)
+
+    result = cursor.fetchall()
+    conn.close()
+
+    return str(result)
         # Update payment status in database
     
 
